@@ -1,0 +1,180 @@
+- if (isSuccess)
+   
+  #videoDiv
+  
+  span#msnumber #{musicnumber}
+   
+  h3 방제 :  
+    span#roomName= roomName 
+    input#ready(type='button', value='준비')
+    input#leave(type='button', value='나가기')
+    input#sevent(type='button', value='ajax')
+
+    
+  #hintWindow(style= 'width:250px; height:50px; overflow:auto; border:2px solid #FC0; float:left; margin-bottom:10px; margin-right:10px;')
+  #countWindow(style='width:95px; height:50px; overflow:auto; border:2px solid #FC0; margin-bottom:10px; ')
+  #chatWindow(style='width:250px; height:200px; overflow:auto; border:1px solid #BF0; float:left; margin-right:10px;')
+
+  #attentsList(style='width:200px; height:200px; overflow:auto; border:1px solid #BF0;')
+    p 참여자 목록
+    ul#attendants
+      each attendant in attendants
+        li(id='attendant-'+attendant)= attendant
+  form
+    span#myName #{nickname}
+    span#myLevel #{level}
+    
+    input(type='text', style='width:200px;')#message
+    input(type='submit', value='보내기')
+
+
+    a(rel='fancybox' ,href='#attentsList')결과창
+
+  
+  script(type='text/javascript', src = 'http://www.google.com/jsapi')
+  script(type='text/javascript')
+  google.load("swfobject", "2.1")
+  script(type='text/javascript')
+     var cnt = 0;
+    
+     var printTime = function() { var clock = $('#clock'); 
+         clock.empty();
+         clock.2012-05-13($('<p>').text(cnt+++'초 지났어요')); setTimeout("printTime()", 1000);
+     };
+     var resetTime = function() { clock.empty(); cnt = 0; };
+     var onPlayerError = function(errorCode) { alert("An error occured of type:" + errorCode);
+      };
+      var onYouTubePlayerReady = function(playerId) {
+            ytplayer = document.getElementById("ytPlayer");
+            ytplayer.addEventListener("onError", "onPlayerError");
+      };
+      var loadPlayer = function() {
+            var videoID = "ylLzyHk54Z0"
+            var params = { allowScriptAccess: "always" };
+            var atts = { id: "ytPlayer" };
+            swfobject.embedSWF("http://www.youtube.com/v/" + videoID+ "&enablejsapi=1&playerapiid=ytplayer", "videoDiv", "100","100", "8", false, false, { allowScriptAccess: 'always', allowfullscreen: 'true' }, atts);
+        };
+      var reloadPlayer = function(s) {
+          var videoID = s
+           swfobject.embedSWF("http://www.youtube.com/v/" + videoID + "&autoplay=1??version=3&enablejsapi=1&playerapiid=ytplayer&fs=1", 'ytPlayer', '150', '150', '9.0.0', false, false, { allowScriptAccess: 'always', allowfullscreen: 'true' });};
+      var playVideo = function() {
+            if (ytplayer) {
+                ytplayer.playVideo();
+            } 
+        };
+      var showResult = function() {
+            window.open("http://www.naver.com","네이버", 'width=100, height=100,left=0,top=0,toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=no, scrollbars=no, copyhistory=no');
+      };
+  script(type='text/javascript')
+    $(document).ready(function() {
+      $('body').layout({ east__size: 190,center__size: 500 ,north__size: 100,west__size: 200 });
+      loadPlayer();
+
+
+ 
+      $('a[rel=fancybox]').fancybox();
+ 
+  
+      var room = io.connect('/room'); 
+      var chatWindow = $('#chatWindow');
+      var hintWindow = $('#hintWindow');
+      var countWindow = $('#countWindow');
+      var messageBox = $('#message');
+      var myName = $('#myName').text();
+      var myLevel = $('#myLevel').text();
+      var musicMax = $('#msnumber').text();
+      var roomName = $('#roomName').text();
+      var mMax;
+      var attendants = $('#attendants');
+      var wjatn = 0;
+      var onceScore = 0;
+      messageBox.focus(); 
+      
+      $('#hintWindow').fancybox();
+
+
+      var changeInt = function(value) {
+       mMax = parseInt(value, 10);
+       };
+       changeInt(musicMax);
+
+      var deleteUserName = function(id) {
+       var item = document.getElementById(id);
+       if(item !==null)
+         item.parentNode.removeChild(item);		
+      };
+
+      var showMessage = function(msg) {
+        var pos = $("#chatWindow").position().top;
+        chatWindow.append($('<p>').text(msg)).animate({ scrollTop: pos }, 'slow');   
+        chatWindow.scrollTop(chatWindow.height());
+      };
+      
+       var countMessage = function(msg) {
+         countWindow.empty();
+         var ros = $("#countWindow").position().top;
+         countWindow.append($('<p>').text(msg)).animate({ scrollTop: ros }, 'slow');   
+       };
+
+       var hintMessage = function(msg) {
+         hintWindow.empty();
+         var hos = $("#hintWindow").position().top;
+         hintWindow.append($('<p>').text(msg)).animate({ scrollTop: hos }, 'slow');   
+       };
+
+      room.on('connect', function() {  
+        room.emit('join', {roomName:$('#roomName').text(), nickName:myName, level:myLevel}); 
+      });
+
+       room.on('joined', function(data) {
+        if(data.isSuccess) {showMessage('현재 이 방의 최대 곡 수 는 '+ musicMax+'입니다.');
+          showMessage(data.nickname + '님이 입장하셨습니다.');
+          attendants.append($('<li>')
+            .attr('id', 'attendant-'+data.nickname)
+            .text(data.nickname)); 
+        }
+      });
+
+      room.on('message', function(data) {
+        showMessage(data.nickName + ' : ' + data.msg); 
+      });
+
+      room.on('leaved', function(data) {
+        showMessage(data.nickName + '님이 나가셨습니다.');
+        $('#attendant-'+data.nickName).remove();
+      });
+
+      $('form').submit(function(e) {
+        e.preventDefault();
+        var msg = messageBox.val();
+        if ($.trim(msg) !== '') {
+          showMessage(myName + ' : ' + msg);
+          room.json.send({nickName:myName, msg:msg});
+          messageBox.val(''); messageBox.focus();
+        }if ($.trim(msg) === a ) { wjatn++; onceScore++; room.emit('ready',{nickName:myName, usrScore:wjatn, oneUserScore:onceScore} ); }
+      });
+
+       $('#ready').click(function(e) {
+        room.emit('ready',{nickName:myName, usrScore:wjatn, oneUserScore:onceScore} ); 
+      });
+      $('#leave').click(function(e) {
+        room.emit('leave', {nickName:myName}); location.href = '/enter';
+     })
+     $('#sevent').click(function(e) {
+        room.emit('s',{nickName:myName});
+     });
+
+      room.on('ended', function(data) {
+          alert('끝');
+     });
+     room.on('sed', function(data) {
+          $('h3').html(data.msg);
+     });
+   
+      room.on('readied', function(data) {   
+         a = data.msName; if(data.msCnt === 5) { room.emit('end', {roomName: roomName}); } showMessage(data.usName +'님이 맞췄습니다.');
+         hintMessage(data.msHint + ' 힌트입니다.');  countMessage(data.msCnt+'곡');
+         reloadPlayer(data.msId); deleteUserName( 'attendant-'+data.usName); attendants.append($('<li>').attr('id', 'attendant-'+data.usName).text(data.usName +' + '+data.OneScore));  
+      });
+     });
+

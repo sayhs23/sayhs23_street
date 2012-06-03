@@ -1,0 +1,112 @@
+script(type='text/javascript')
+ var loadVideo = function(playerUrl, autoplay) {
+        swfobject.embedSWF(playerUrl + '&rel=1&border=0&fs=1&autoplay=' +(autoplay ? 1 : 0), 'player', '100', '150', '8', false,false, { allowfullscreen: 'true' });
+  };
+ var showMyVideos2=function(data) {
+        var feed = data.feed;
+        var entries = feed.entry || [];
+        var html = ['<ul class="videoss">'];
+        for (var i = 0; i < entries.length; i++) {
+            var entry = entries[i];
+            var title = entry.title.$t.substr(0, 80);
+            var thumbnailUrl = entries[i].media$group.media$thumbnail[0].url;
+            var playerUrl = entries[i].media$group.media$content[0].url;
+            html.push('<li onclick="loadVideo(playerUrl, true)">', '<span class="titlec">', title, '...</span><br /><img src="',thumbnailUrl, '" width="120" height="90"/>', '</span></li>');
+        }
+        html.push('</ul><br style="clear: left;"/>');
+        document.getElementById('videos2').innerHTML = html.join('');
+        if (entries.length > 0) {
+            loadVideo(entries[0].media$group.media$content[0].url, false);
+        }
+    };
+  var loadPlayer = function() {
+            var videoID = "X6XXia5B2Wg"
+            var params = { allowScriptAccess: "always" };
+            var atts = { id: "ytPlayer" };
+            swfobject.embedSWF("http://www.youtube.com/v/" + videoID+ "&enablejsapi=1&playerapiid=ytplayer", "player", "500","250", "8", false, false, { allowScriptAccess: 'always', allowfullscreen: 'true' }, atts);
+  };
+  var search = function(selectValue) {
+        var number = selectValue;
+        var name = $('#name').val();
+        var head = $('head')[0];
+        var script = document.createElement('script');
+
+        var a = 'http://gdata.youtube.com/feeds/api/videos?q=';
+        var b = '&alt=json-in-script&callback=showMyVideos2&max-results=';
+        var c = '&format=5';
+        script.type = 'text/javascript';
+        script.src = a + name + b +number+ c;
+        head.appendChild(script);
+  };
+#box 
+ div#top
+   input(type='button',class='menuBt', id='LOGO', value='LOGO', style='width:150px;')
+   input(type='button',class='menuBt', id='mStreet', value='mStreet', style='width:170px; margin-left:125px; margin-top:55px;')
+   input(type='button',class='menuBt', id='cStreet', value='cStreet', style='width:170px;')
+   input(type='button',class='menuBt', id='sStreet', value='sStreet', style='width:170px;')
+   input(type='button',class='menuBt', id='gStreet', value='gStreet', style='width:170px; margin-right:3px;')
+ #left
+  #face_1(style='margin-left:40px;')
+    <fb:profile-pic uid="loggedinuser" size="square"></fb:profile-pic>
+    <fb:name uid="loggedinuser" use-you="no"></fb:name>
+    <fb:login-button autologoutlink="true"></fb:login-button>
+    <button class="menuBt" onclick="dial()" style='width:126px; height:20px;'>담벼락에 글쓰기</button>
+  #left_1(style='margin-top:30px;')
+    div#videos2(class='videos2', style='width:200px;  height:400px; float:left; overflow:auto;')
+
+  #left_5(style='margin-left:80px;')
+     div#playerContainer(style='margin-top:15px; margin-bottom:200px; margin-left:370px;')
+     
+ #main(style='width:700px; height:380px; margin-left:68px; margin-top:8px;')
+    input(type='text', id ='name', style='width:295px;  height:20px; margin-left:80px;')
+    input(type='button',class='faceBt', id='searchBt1', value='검색', style='margin-left:5px;')
+
+    label#musicmax(for='musicmax', style='margin-right:10px; ') 검색 곡수
+       select(class='musicmax',name='musicmax')
+        option(value='10', selected) 10곡
+        option(value='20') 20곡
+        option(value='30') 30곡
+        option(value='40') 40곡
+    p
+    object#player
+    #playerdown(style='margin-top:140px;')
+    <fb:comments width="480" height="300" LEFTMARGIN="100" title="댓글달기" canpost="true" candelete="false" publish_feed="false">
+    </fb:comments>
+ #bottom3
+    
+  
+
+script(type='text/javascript', src ='http://swfobject.googlecode.com/svn/trunk/swfobject/swfobject.js')
+script(type='text/javascript', src = 'http://www.google.com/jsapi')
+script(type='text/javascript', src='http://www.google.com/jsapi?key=ABQIAAAAdV0OihhLfo4ru8N1BXzlWxSJ87f2VNqmObhB7kj4DJwDOGkiiBR3Nh79Pxxmk0DgEb3TTwZHI-Fp1g')
+script(type='text/javascript', src='http://code.jquery.com/jquery-1.7.0.min.js')
+script(type='text/javascript') 
+  $(document).ready(function() {
+   loadPlayer();
+   var room = io.connect('/room');
+
+  room.on('connect', function() {  
+     room.emit('drama', {nickName:'text'}); 
+  });
+
+  $('#mStreet').click(function(e) {
+     location.href = '/mStreet';
+  });
+  $('#gStreet').click(function(e) {
+     location.href = '/gStreet';
+  });
+  $('#sStreet').click(function(e) { 
+     location.href = '/sStreet';
+  });
+  $('#cStreet').click(function(e) { 
+     location.href = '/cStreet';
+  });
+  $('#LOGO').click(function(e) {
+     location.href = '/';
+  });
+  $('#searchBt1').click(function(e) {
+    var selectValue = $(".musicmax option:selected").val(); search(selectValue);
+    });
+
+
+  });

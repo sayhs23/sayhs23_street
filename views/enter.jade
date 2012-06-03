@@ -1,0 +1,123 @@
+- if (isSuccess)
+ div.ui-layout-west(style='overflow:auto;')
+   h2 사용자 정보
+   p 이름: #{nickname}
+   p 레벨: #{level}
+   p 총 점수: #{totalscore}
+   input#logout(type='button', value='로그아웃')
+   input#friendlist(type ='button', value='친구관리')
+   br
+
+   #hs 친구 영역
+ div#container.ui-layout-center(style='overflow:auto;')
+   div.ui-layout-north(style='color:red;',style='overflow:auto;')
+     div(style= 'width:700px; height:300px; overflow:auto; border:2px solid #FC0; float:left; margin-bottom:10px; margin-right:1px;')
+       h2 방 목록 리스트 영역
+       div(style='width:500px; height:190px; float:left;',style='overflow:auto;')
+        each room in roomInfo
+          li= room.name+ '-판당 곡수:'+room.musicmaxs+'최대 인원:'+room.usermaxs 
+            input(type='button', value='입장',
+                  onclick='location.href=\'/join/' + room.name + '\'', style='margin-top:10px;'); 
+
+     div(style= 'width:130px; height:300px; overflow:auto;solid #FC0;')
+      input(type='button', value ='방 만들기', id='createRoom', style='width:127px; height: 50px;  ,float:center;, margin-left:2px; margin-top:10px;')
+      input(type='button', value ='새로 고침', style ='width:128px; height: 50px;  ,float:center;,margin-left:2px; margin-top:10px;')
+      #dialog(style='display:none', title='방 만들기')
+       form(id ='makeRoom', action='/makeRoom', method='POST')
+        label(for='roomname') 방     장    
+        input(type='text', id ='nickname', name ='nickname', value='#{nickname}')p
+        label(for='roomname') 방     제    
+        input(type='text', id='roomname', name='roomname')p
+        label(for='musicmax') 게임곡수
+        select(name='musicmax')
+         option(value='10', selected) 10곡
+         option(value='20') 20곡
+         option(value='30') 30곡
+         option(value='40') 40곡
+        p
+        lable(for='usermax') 최대인원 
+        select(name='usermax')
+         option(value='10', selected) 2명
+         option(value='20') 4명
+         option(value='30') 6명
+         option(value='40') 8명
+
+     
+ 
+   div.ui-layout-south(style='overflow:auto;')
+     #chatWindow(style='width:700px; height:190px; overflow:auto; border:1px solid #BF0; float:left; margin-right:10px;')
+      p 대기실 채팅 영역
+     #attentsList(style='height:190px; overflow:auto; border:1px solid #BF0;')
+      p 참여자 목록
+      ul#attendants
+       each wUser in waitUser
+         li(id='wUser.name-'+wUser.name)= wUser.name
+
+     span#myName #{nickname}
+     input(type='text', style='width:540px;')#message
+     input(type='Button', id='chatButton', value='보내기', style='width:60px; height:25px;')
+ div.ui-layout-east(style='overflow:auto;')
+  h1 사용자 정보 창
+  p #{nickname}님 환영합니다.
+  p 원하는 채팅방이 없으면 채팅방을 만드세요.
+ div.ui-layout-north(style='overflow:auto;')
+   input(type='button',  body background ='/images/gitar.jpg', value ='게임 하기', id='gameStart',style='width:230px; height:50px;  overflow:auto; border:2px solid #FC0; float:left; margin-left:215px; margin-top:45px;')
+   input(type='submit', value ='내 앨범 보기', id='myElbem', style='width:230px; height:50px;  overflow:auto; border:2px solid #FC0; float:left; margin-left:8px; margin-top:45px;')
+   input(type='button', value='커뮤니티',style='width:230px; height:50px;  overflow:auto; border:2px solid #FC0; float:left; margin-left:8px; margin-top:45px;')
+   input(type='button', value='부가 기능1',style='width:230px; height:50px; overflow:auto; border:2px solid #FC0; float:left; margin-left:8px; margin-top:45px;')
+
+ script(type='text/javascript', src ='/javascripts/jquery.layout-1.2.0.js')
+ script(type='text/javascript') 
+  $(document).ready(function() {
+   $('body').layout({ east__size: 190,center__size: 500 ,north__size: 100,west__size: 200 });
+   var room = io.connect('/room'); 
+   var chatWindow = $('#chatWindow');
+   var messageBox = $('#message');
+   var myName = $('#myName').text();
+   
+   $('#chatWindow').focus();
+   
+   var showMessage = function(msg) {
+        var pos = $("#chatWindow").position().top;
+        chatWindow.append($('<p>').text(msg)).animate({ scrollTop: pos }, 'slow');   
+        chatWindow.scrollTop(chatWindow.height());
+   };
+   room.on('message', function(data) {
+        showMessage(data.nickName + ' : ' + data.msg); 
+   });
+   room.on('friendlisted', function(data) { 
+       alert('a');
+       var array = data.usName;
+
+   $.each(data.usName, function(index, item){
+      alert( item.friend); var output=''; output+= '<br>'+ item.friend +'<input type="button", value="친구정보보기">';$('#hs').append(output); }); 
+   });
+   $('#chatButton').click(function(e) {
+        var msg = messageBox.val();
+        if ($.trim(msg) !== '') {
+          showMessage(myName + ' : ' + msg);
+          room.json.send({nickName:myName, msg:msg});
+          messageBox.val(''); messageBox.focus();
+        }
+    });
+   $('#logout').click(function(e) { location.href = '/logout/#{nickname}';  });
+   $('#myElbem').click(function(e) {  location.href='/myelbem/#{nickname}'; });
+   $('#community').click(function(e) { location.href='/community/#{nickname}'; });
+   $('#add').click(function(e) { location.href ='/add/#{nickname}'; });
+   $('#friendlist').click(function(e) {  room.emit('friendlist', {nickNmae:myName}); });
+   $('#gameStart').css('background','Red');
+   
+   $('#createRoom').click(function(e) {
+        $('#dialog').dialog('open'); $('#roomname').focus();
+   });
+  });
+
+- else
+  - if (nickname === '')
+    script(type='text/javascript')
+      alert('잘못된 닉네임입니다.');
+      history.go(-1);
+  - else
+    script(type='text/javascript')
+      alert('이미 로그인 중 입니다.');
+      history.go(-1);

@@ -1,0 +1,85 @@
+div.ui-layout-west(style='overflow:auto;')
+   h2 사용자 정보
+   p 이름: #{nickname}
+   p 레벨: #{level}
+   p 총 점수: #{totalscore}
+   input#logout(type='button', value='로그아웃')
+   input#friendlist(type ='button', value='친구관리')
+ div#container.ui-layout-center(style='overflow:auto;')
+   div.ui-layout-north(style='height:500px; ')
+      p 노래 목록이 나오는 영역
+      p 노래 목록이 나오는 영역
+
+   div.ui-layout-south(style='overflow:auto;')
+     #chatWindow(style='width:700px; height:190px; overflow:auto; border:1px solid #BF0; float:left; margin-right:10px;')
+      p 대기실 채팅 영역
+     #attentsList(style='height:190px; overflow:auto; border:1px solid #BF0;')
+      p 참여자 목록
+      ul#attendants
+       each wUser in waitUser
+         li(id='wUser.name-'+wUser.name)= wUser.name
+     input(type='text', style='width:540px;')#message
+     input(type='Button', id='chatButton', value='보내기', style='width:60px; height:25px;')
+div.ui-layout-east(style='overflow:auto;')
+  h1 사용자 정보 창
+  p #{nickname}님 환영합니다.
+  p 원하는 채팅방이 없으면 채팅방을 만드세요.
+div.ui-layout-north(style='overflow:auto;')
+   input(type='button', value ='게임 하기', id='gameStart',style='width:230px; height:50px;  overflow:auto; border:2px solid #FC0; float:left; margin-left:215px; margin-top:45px;')
+   input(type='submit', value ='내 앨범 보기', id='myElbem', style='width:230px; height:50px;  overflow:auto; border:2px solid #FC0; float:left; margin-left:8px; margin-top:45px;')
+   input(type='button', value='커뮤니티',id='community',style='width:230px; height:50px;  overflow:auto; border:2px solid #FC0; float:left; margin-left:8px; margin-top:45px;')
+   input(type='button', value='부가 기능1',, id='add', style='width:230px; height:50px; overflow:auto; border:2px solid #FC0; float:left; margin-left:8px; margin-top:45px;')
+
+ script(type='text/javascript') 
+  $(document).ready(function() {
+   var room = io.connect('/room'); 
+  var chatWindow = $('#chatWindow');
+  var messageBox = $('#message');
+  var myName = $('#myName').text();
+  $('#chatWindow').focus();
+  var showMessage = function(msg) {
+        var pos = $("#chatWindow").position().top;
+        chatWindow.append($('<p>').text(msg)).animate({ scrollTop: pos }, 'slow');   
+        chatWindow.scrollTop(chatWindow.height());
+      };
+  room.on('message', function(data) {
+        showMessage(data.nickName + ' : ' + data.msg); 
+      });
+  $('#chatButton').click(function(e) {
+        var msg = messageBox.val();
+        if ($.trim(msg) !== '') {
+          showMessage(myName + ' : ' + msg);
+          room.json.send({nickName:myName, msg:msg});
+          messageBox.val(''); messageBox.focus();
+        }
+      });
+   
+  $('body').layout({ east__size: 190,center__size: 500 ,north__size: 100,west__size: 200 });
+  
+   $('#logout').click(function(e) { location.href = '/logout/#{nickname}';  });
+   $('#myElbem').click(function(e) {  location.href='/myelbem/#{nickname}'; });
+   $('#community').click(function(e) { location.href='/community/#{nickname}'; });
+   $('#add').click(function(e) { location.href ='/add/#{nickname}'; });
+    $('#myElbem').css('background','Red');
+    $('#dialog').dialog({ autoOpen: false, buttons: 
+    { 방만들기: function() {
+      $('#makeRoom').submit();
+
+  
+   $('#dialog').dialog('close');
+   },
+   닫기: function() {
+   $('#event_name').val('');
+   $('#event_date').val('');
+   $('#dialog').dialog('close');
+   }
+   },
+   modal: true
+   });
+    $('#createRoom').click(function(e) {
+          $('#dialog').dialog('open'); $('#roomname').focus();
+       });
+  
+  });
+ script(type='text/javascript')
+  $('#logout').click(function(e) { location.href = '/logout/#{nickname}'; });

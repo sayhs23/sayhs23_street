@@ -1,0 +1,24 @@
+form(action='/login-check', method='POST')
+  label(for='nickname')   아이디   
+  input(type='text', id='nickname', name='nickname')p
+  label(for='password') 비밀 번호
+ 
+  input(type='password', id='password', name='password')p
+  input(type='submit', value='입장')p
+
+  회원이 아니시면 회원 가입을 하세요!
+
+ input#join(type='button', value='가입 하기')
+
+
+
+script(type='text/javascript') 
+  $(document).ready(function() {
+    $('form').submit(function(e) {
+      if ($.trim($('#nickname').val()) === '') {
+        alert('닉네임을 입력해 주세요.');
+        return false;
+      }
+    });
+    $('#join').click(function(e) { location.href='/join-form';});
+  });

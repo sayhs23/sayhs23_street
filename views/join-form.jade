@@ -1,0 +1,36 @@
+h3 회원가입
+p 회원에 가입해 주세요.
+form(id='joinForm', method='POST', action='/joins')
+  label(for='nickname')별명:
+  input(type='text', name='nickname', id='nickname') 
+  input#check(type='button', value ='별명 중복 검사')
+  p
+  label(for='name') 이름 : 
+  input(type='text', name='name', id='name') 
+  p
+  label(for='password') 비밀 번호:
+  input(type='password', name='password', id ='password')
+  p
+  label(for='repassword') 비밀 번호 확인:
+  input(type='password', name='repassword', id='repassword')
+  p
+  label(for='email') 이메일 : 
+  input(type='text', name='email', id='email')
+  input(type='submit', value='전송')
+
+script(type='text/javascript')
+  $(document).ready(function() {
+    $('#joinForm').submit(function(e) {
+      if($.trim($('#password').val()) !== $.trim($('#repassword').val()) ){
+        alert('비밀 번호가 다른데요'); return false;}
+      if ($.trim($('#name').val()) === '' || $.trim($('#email').val()) === '') {
+        alert('이름과 이메일을 입력해 주세요.'); 
+        return false;
+      }
+    }); 
+
+    $('#check').click(function(e) {
+       alert('아직 미 구현');
+     });
+  });
+  

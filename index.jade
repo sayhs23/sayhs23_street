@@ -1,0 +1,66 @@
+h1#open_button
+hr
+
+div#output
+
+div#dialog
+  h1 a
+  label(for='event_name') 이름
+  input(type='text', id='event_name')
+  lable(for='event_date') 날짜
+  input(type='text', id='event_date')
+  
+form(action='/login-check', method='POST')
+  label(for='nickname')   ID   
+  input(type='text', id='nickname', name='nickname')p
+  label(for='password') PW
+ 
+  input(type='password', id='password', name='password')p
+  input(type='submit', value='입장')
+
+  input#join(type='button', value='회원가입')
+
+script(type='text/javascript') 
+  $(document).ready(function() {
+    $('#open_button').click(function() {
+			$('#dialog').dialog('open');
+		});
+
+		$('#dialog').dialog({
+			autoOpen: false,
+			buttons: {
+				submit: function() {
+					 var eventName = $('#event_name').val();
+					 var eventDate = $('#event_date').val();
+
+					 $('<h1></h1>').html(eventName + ' : '+eventDate).appendTo('#output');
+
+					 $('#event_name').val('');
+					 $('#event_date').vale('');
+					 $('#dialog').dialog('close');
+				},
+				reset: function() {
+					$('#event_name').val('');
+					$('#event_date').val('');
+				},
+				cancel: function() {
+					$('#event_name').val('');
+					$('#event_date').val('');
+					$('#dialog').dialog('close');
+				}
+			},
+			modal: true
+		});
+
+		$('#event_date').datepicker({
+			dateFormat: 'yy년 mm월 dd일',
+			numberOfMonths: 3
+		});
+    $('form').submit(function(e) {
+      if ($.trim($('#nickname').val()) === '') {
+        alert('닉네임을 입력해 주세요.');
+        return false;
+      }
+    });
+    $('#join').click(function(e) { alert('h'); };
+  });

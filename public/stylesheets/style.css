@@ -1,0 +1,138 @@
+/*body {
+  padding: 50px;
+  background: #ffffff
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  SCROLLBAR-FACE-COLOR: #ffffff; 
+  SCROLLBAR-HIGHLIGHT-COLOR: #3874c8; 
+  SCROLLBAR-SHADOW-COLOR: #3874c8; 
+  SCROLLBAR-3DLIGHT-COLOR: #ffffff; 
+  SCROLLBAR-ARROW-COLOR: #3874c8;
+  SCROLLBAR-TRACK-COLOR: #ffffff; 
+  SCROLLBAR-DARKSHADOW-COLOR: #ffffff ;
+}*/
+div.ui-layout-north
+{
+	background: #ffffff;
+	font: 20px "bold";
+}
+div.ui-layout-west
+{
+	background: #DCFFDC;
+}
+div.ui-layout-center
+{
+	background: #DCDCDC;
+}
+div.ui-layout-east
+{
+	background: #ffDCDC;
+}
+.p1{
+	font:12px 굴림;
+}
+.videos2{
+	background-color: #f5f5f5;
+	font:12px 굴림;
+}
+.videos1{
+	background-color: #ffffff;
+	font:12px 굴림;
+}
+.searchBt{
+border:5x solid #000000; 
+	font: 18px 굴림;
+	color:#ffffff;
+	height:30px;
+	width:50px;
+ border-radius:4px;/* 8픽셀정도의 모서리 둥글기효과 */
+ background-color: #ff5c00;/* 흰색 배경을 투명도 10%로 깔기 */
+
+}
+.faceBt{
+border:5x solid #000000; 
+	font: 18px 굴림;
+	color:#ffffff;
+
+ border-radius:4px;/* 8픽셀정도의 모서리 둥글기효과 */
+
+ background-color: #ff5c00;/* 흰색 배경을 투명도 10%로 깔기 */
+
+}
+.container-1{
+  background-color: #ff5c00;
+}
+.menuBt{
+	height: 40px;
+	width:  73px;
+	font: 15px;
+	border-radius:4px;
+	color:#ffffff;
+	background-color: #ff5c00;
+}
+body {
+            margin: 0px;
+            font-size: 14px;
+            color: #FFF;   
+        }
+#box {
+            position: relative;
+            height: auto;
+            width: 1000px;
+            margin: auto; 
+            background-color: #F90;
+}
+#top {
+           background-color: #fff;
+           height: 100px;
+           width: 1000px;
+           position: relative;          
+        }
+#left {
+           background-color: #fff;
+           float: left;
+           height: 400px;
+           width: 200px;
+           position: relative;
+        }
+#left_1 {
+		   font-size: 14px;
+		   color: #000000;   
+           position: relative;
+}
+#left_3 {
+		   font-size: 14px;
+		   color: #000000;   
+           position: relative;
+        }
+#left_5 {
+		   font-size: 12px;
+		   color: #000000;   
+           position: relative;
+        }
+#main {
+           background-color: #fff;
+           float: left;
+           height: 400px;
+           width: 800px;
+           position: relative;          
+        }
+#bottom {
+		   background-color: #fff;
+           height: 100px;
+           width: 1500px;
+           position: relative;
+           clear: both;
+}
+#bottom_1 {
+           position: relative;
+		   float: left;
+}
+#bottom_2 {
+           position: relative;
+		   float: left;
+		  
+}
+#bottom_3 {
+           position: relative;
+		   float: left;
+}
